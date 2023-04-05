@@ -10,11 +10,11 @@ export const connectToMongoDB = () => {
   mongoose.connect(mongoURI);
 
   const connection = mongoose.connection;
-  connection.on("connected", function () {
+  connection.on("connected", () => {
     console.log("\x1b[32m[Server] Database Connected\x1b[0m");
   });
 
-  connection.on("error", function (err) {
+  connection.on("error", (err) => {
     console.error("\x1b[31m[Server] Error connecting to MongoDB\x1b[0m", err);
   });
 };
