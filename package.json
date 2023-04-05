@@ -1,0 +1,22 @@
+{
+  "name": "serverts-mongoose",
+  "version": "1.0.0",
+  "description": "Express server for personal test with mongoose",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ZeroWk-EM/ServerTS-Mongoose.git"
+  },
+  "keywords": [
+    "express"
+  ],
+  "author": "Emanuele Moncada",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ZeroWk-EM/ServerTS-Mongoose/issues"
+  },
+  "homepage": "https://github.com/ZeroWk-EM/ServerTS-Mongoose#readme"
+}
