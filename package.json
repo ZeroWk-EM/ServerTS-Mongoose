@@ -5,7 +5,8 @@
   "main": "app.js",
   "scripts": {
     "build": "tsc",
-    "start": "npm run build && node ./dist/app.js",
+    "start": "SET DB=prod&& npm run build && node ./dist/app.js",
+    "dev": "SET DB=dev&& npm run build && node ./dist/app.js",
     "test": "npm run build && mocha ./dist/tests/*.js"
   },
   "repository": {
@@ -27,7 +28,8 @@
     "express": "^4.18.2",
     "express-validator": "^6.15.0",
     "jsonwebtoken": "^9.0.0",
-    "mongoose": "^7.0.3"
+    "mongoose": "^7.0.3",
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.0",
@@ -36,6 +38,7 @@
     "@types/jsonwebtoken": "^9.0.1",
     "@types/mocha": "^10.0.1",
     "@types/supertest": "^2.0.12",
+    "@types/uuid": "^9.0.1",
     "chai": "^4.3.7",
     "mocha": "^10.2.0",
     "supertest": "^6.3.3"
