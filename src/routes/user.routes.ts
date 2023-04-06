@@ -1,6 +1,5 @@
 import express from "express";
 import dotenv from "dotenv";
-import { IUser } from "../interfaces/user.interface";
 import User from "../models/user.model";
 
 dotenv.config();
