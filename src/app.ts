@@ -28,3 +28,5 @@ app.listen(port, () => {
   console.log(`\x1b[32m[Server] Server Connected on port ${port}\x1b[0m`);
   connectToMongoDB();
 });
+
+export default app;
