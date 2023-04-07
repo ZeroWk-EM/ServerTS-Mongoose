@@ -16,7 +16,7 @@ router.get("/:verifyToken", async ({ params: { verifyToken } }, res) => {
       return res.status(200).json({ message: "User enabled" });
     }
     return res
-      .status(404)
+      .status(400)
       .json({ message: "This token is not associated with any user" });
   } catch (error) {
     return res.status(400).json({ message: "Error to validate user", error });
