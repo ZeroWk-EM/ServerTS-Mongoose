@@ -32,6 +32,7 @@ router.post(
       });
       if (user) {
         res.status(201).json({
+          id:user._id,
           name: user.name,
           surname: user.surname,
           email: user.email,
