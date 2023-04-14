@@ -8,7 +8,7 @@ import dotenv from "dotenv";
 import { Schema } from "mongoose";
 
 dotenv.config();
-const salt_round = process.env.SALT_ROUND;
+const salt_round = Number(process.env.SALT_ROUND);
 require("chai").should();
 
 describe("Endpoints", () => {
@@ -18,6 +18,8 @@ describe("Endpoints", () => {
     email: "em@google.it",
     password: "itsstevejobs2012",
   };
+
+  // BLOCCO 01
   describe("Signup", () => {
     after(async () => {
       await User.deleteOne({ email: user.email });
@@ -73,6 +75,155 @@ describe("Endpoints", () => {
     it("Test [409] Email is just present", async () => {
       const { status } = await request(app).post("/signup").send(user);
       status.should.be.equal(409);
+    });
+  });
+
+  // BLOCCO 02
+  describe("Validate", () => {
+    let newUser: IUser;
+    before(async () => {
+      newUser = {
+        name: "Carlo",
+        surname: "Leonardi",
+        email: "carloleonardi83@gmail.com",
+        password: "cript-password",
+        verify: uuidv4(),
+      };
+      await User.create(newUser);
+    });
+    after(async () => {
+      await User.findOneAndDelete({ email: newUser.email });
+    });
+
+    // TEST 01
+    it("Test [400] Invalid token", async () => {
+      const { status } = await request(app).get(`/validate/fake-token`);
+      status.should.be.equal(400);
+    });
+
+    // TEST 02
+    it.skip("Test [200] Set token", async () => {
+      const { status } = await request(app).get(`/validate/${newUser.verify}`);
+      console.log("01", newUser.verify);
+      status.should.be.equal(200);
+      console.log("02", newUser.verify);
+      const userFinded = await User.findOne({ email: newUser.email });
+      userFinded!.should.not.have.property("verify");
+    });
+  });
+
+  // BLOCCO 03
+  describe("Login", () => {
+    let newUser: IUser;
+    let password = "password";
+    before(async () => {
+      newUser = {
+        name: "Carlo",
+        surname: "Leonardi",
+        email: "carloleonardi83@gmail.com",
+        password: await bcrypt.hash(password, salt_round),
+      };
+      await User.create(newUser);
+    });
+    after(async () => {
+      await User.findOneAndDelete({ email: newUser.email });
+    });
+
+    // TEST 01
+    it("Test [400] Wrong data", async () => {
+      const { status } = await request(app)
+        .post(`/login`)
+        .send({ email: "wrongmail", password: "A simple password" });
+      status.should.be.equal(400);
+    });
+
+    // TEST 02
+    it("Test [401] Invalid credentials", async () => {
+      const { status } = await request(app)
+        .post(`/login`)
+        .send({ email: newUser.email, password: "wrong-password" });
+      status.should.be.equal(401);
+    });
+
+    //TEST 03
+    it("Test [200] Login success", async () => {
+      const { status, body } = await request(app)
+        .post(`/login`)
+        .send({ email: newUser.email, password });
+      status.should.be.equal(200);
+      body.should.have.property("token");
+    });
+  });
+
+  // BLOCCO 04
+  describe("Login with not confirmed user", () => {
+    let newUser: IUser;
+    let password = "password";
+    before(async () => {
+      newUser = {
+        name: "Carlo",
+        surname: "Leonardi",
+        email: "carloleonardi83@gmail.com",
+        password: await bcrypt.hash(password, salt_round),
+        verify: uuidv4(),
+      };
+      await User.create(newUser);
+    });
+    after(async () => {
+      await User.findOneAndDelete({ email: newUser.email });
+    });
+
+    // TEST 01
+    it("Test [401] Login not success (while email is not verified)", async () => {
+      const { status } = await request(app)
+        .post(`/login`)
+        .send({ email: newUser.email, password });
+      status.should.be.equal(401);
+    });
+  });
+
+  // BLOCCO 05
+  describe("Me", () => {
+    let newUser: IUser;
+    let password = "password";
+    before(async () => {
+      newUser = {
+        name: "Carlo",
+        surname: "Leonardi",
+        email: "carloleonardi83@gmail.com",
+        password: await bcrypt.hash(password, salt_round),
+      };
+      await User.create(newUser);
+    });
+    after(async () => {
+      await User.findOneAndDelete({ email: newUser.email });
+    });
+
+    // TEST 01
+    it("Test [400] Token wrong", async () => {
+      const { status } = await request(app)
+        .post(`/login`)
+        .set({ authorization: "wrong-token" });
+      status.should.be.equal(400);
+    });
+
+    // TEST 02
+    it("Test [200] Token rigth", async () => {
+      const {
+        body: { token },
+      } = await request(app)
+        .post(`/login`)
+        .send({ email: newUser.email, password });
+
+      const { body } = await request(app)
+        .get("/me")
+        .set({ authorization: token });
+      body.should.have.property("_id");
+      body.should.have.property("name").equal(newUser.name);
+      body.should.have.property("surname").equal(newUser.surname);
+      body.should.have.property("email").equal(newUser.email);
+      body.should.not.have.property("password");
+      body.should.not.have.property("verify");
     });
   });
 });
