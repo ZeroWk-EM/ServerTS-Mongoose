@@ -3,7 +3,6 @@ import { Schema, model } from "mongoose";
 
 const User = new Schema<IUser>(
   {
-    _id: { type: Schema.Types.ObjectId, auto: true, required: true },
     name: { type: String, required: true },
     surname: { type: String, required: true },
     email: { type: String, required: true },
