@@ -31,7 +31,12 @@ router.post(
           return res.status(200).json({
             message: "Auth Successful",
             token: jwt.sign(
-              { name: user.name, surname: user.surname, email: user.email },
+              {
+                _id: user._id,
+                name: user.name,
+                surname: user.surname,
+                email: user.email,
+              },
               secret_key
             ),
           });
